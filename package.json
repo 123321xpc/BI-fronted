@@ -3,7 +3,7 @@
   "author": "xupeicai <2533681677@qq.com>",
   "scripts": {
     "build": "max build",
-    "dev": "max dev",
+    "dev": "max dev port=8000",
     "format": "prettier --cache --write .",
     "postinstall": "max setup",
     "prepare": "husky",
@@ -14,9 +14,12 @@
     "@ant-design/icons": "^5.0.1",
     "@ant-design/pro-components": "^2.4.4",
     "@umijs/max": "^4.4.10",
-    "antd": "^5.4.0"
+    "antd": "^5.4.0",
+    "axios": "^1.9.0",
+    "mockjs": "^1.1.0"
   },
   "devDependencies": {
+    "@types/mockjs": "^1.0.10",
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
     "lint-staged": "^13.2.0",
