@@ -23,6 +23,11 @@ export const routes: RouteType[] = [
         path: '/EditableTable',
         component: './EditableTable',
       },
+      {
+        name: 'Test',
+        path: '/test',
+        component: './Test',
+      },
     ],
   },
   {

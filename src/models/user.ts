@@ -1,15 +1,17 @@
 // 全局共享数据示例
-import { UserType } from '@/types/user';
-import { useState } from 'react';
 
-const initialState: UserType = {
+import { useLocalStorageState } from 'ahooks';
+
+const initialState: API.LoginUserVO = {
   userName: '未登录',
 };
 
 const user = () => {
-  const [user, setUser] = useState<UserType>(initialState);
+  const [user, setUser] = useLocalStorageState('user', {
+    defaultValue: initialState,
+  });
 
-  const updateUser = (newUser: UserType) => {
+  const updateUser = (newUser: API.LoginUserVO) => {
     setUser({ ...newUser, ...newUser });
   };
 

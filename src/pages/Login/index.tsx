@@ -1,4 +1,7 @@
 import { LOGO_URL, SYSTEM_NAME } from '@/constants';
+import { userLoginUsingPost } from '@/service/api/userController';
+import { useModel, useNavigate } from '@@/exports';
+import { useRequest } from '@@/plugin-request';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import {
   LoginForm,
@@ -10,23 +13,43 @@ import styles from './index.less';
 
 export default () => {
   const { token } = theme.useToken();
+  const { updateUser } = useModel('user');
+  const nav = useNavigate();
+
+  const { run: handleLogin } = useRequest(
+    (params: API.UserLoginRequest) => userLoginUsingPost(params),
+    {
+      manual: true,
+      onSuccess: (res) => {
+        console.log(res);
+        if (res) {
+          updateUser(res as any);
+          nav('/home');
+        }
+      },
+    },
+  );
 
   return (
     <div
       className={styles.container}
       style={{ backgroundColor: token.colorBgContainer }}
     >
-      <LoginForm logo={LOGO_URL} title={SYSTEM_NAME}>
+      <LoginForm<API.UserLoginRequest>
+        logo={LOGO_URL}
+        title={SYSTEM_NAME}
+        onFinish={handleLogin as any}
+      >
         <Tabs centered>
           <Tabs.TabPane key={'account'} tab={'账号密码登录'} />
         </Tabs>
         <ProFormText
-          name="username"
+          name="userAccount"
           fieldProps={{
             size: 'large',
             prefix: <UserOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'用户名: admin or user'}
+          placeholder={'用户名: admin'}
           rules={[
             {
               required: true,
@@ -35,12 +58,12 @@ export default () => {
           ]}
         />
         <ProFormText.Password
-          name="password"
+          name="userPassword"
           fieldProps={{
             size: 'large',
             prefix: <LockOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'密码: ant.design'}
+          placeholder={'密码: admin'}
           rules={[
             {
               required: true,

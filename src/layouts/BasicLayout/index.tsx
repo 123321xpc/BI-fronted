@@ -9,11 +9,14 @@ import styles from './index.less';
 export default () => {
   const nav = useNavigate();
   const location = useLocation();
-  const { user } = useModel('user');
+  const { user = {}, removeUser } = useModel('user');
 
   const handleClick = () => {
     if (!user.id) {
       nav('/user/login');
+    } else {
+      //  退出登录
+      removeUser();
     }
   };
 
