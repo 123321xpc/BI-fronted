@@ -1,4 +1,4 @@
-import { RESULT_CODE } from '@/constants';
+import { DEFAULT_PAGE_SIZE, RESULT_CODE } from '@/constants';
 import AddModal from '@/pages/Admin/UserAdmin/AddModal';
 import { listUserByPageUsingPost } from '@/service/api/userController';
 import { ProTable } from '@ant-design/pro-components';
@@ -25,7 +25,6 @@ const columns = [
 export default () => {
   const handleRequest = async (params: API.UserQueryRequest) => {
     const res = await listUserByPageUsingPost(params);
-    console.log(res);
     if (res.code === RESULT_CODE.SUCCESS && res.data) {
       return {
         success: true,
@@ -44,13 +43,8 @@ export default () => {
       search={{
         labelWidth: 'auto',
       }}
-      options={{
-        setting: {
-          listsHeight: 400,
-        },
-      }}
       pagination={{
-        pageSize: 5,
+        pageSize: DEFAULT_PAGE_SIZE,
       }}
       headerTitle="User Admin"
       toolBarRender={() => [<AddModal />]}

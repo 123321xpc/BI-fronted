@@ -1,8 +1,5 @@
-import { Flex } from 'antd';
-import styles from './index.less';
-
 const Page = () => {
-  return <Flex className={styles.container}>new</Flex>;
+  return <div className={''}>new</div>;
 };
 
 export default Page;

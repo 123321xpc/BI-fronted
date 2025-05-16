@@ -1,4 +1,6 @@
+import { RESULT_CODE } from '@/constants';
 import AddModal from '@/pages/EditableTable/AddModal';
+import { listUserByPageUsingPost } from '@/service/api/userController';
 import type { ProColumns } from '@ant-design/pro-components';
 import { EditableProTable } from '@ant-design/pro-components';
 import { Button, Flex } from 'antd';
@@ -42,51 +44,22 @@ export default () => {
 
   const columns: ProColumns<DataSourceType>[] = [
     {
-      title: '活动名称',
-      dataIndex: 'title',
-      tooltip: '只读，使用form.getFieldValue获取不到值',
-      width: '15%',
+      dataIndex: 'id',
+      title: 'ID',
     },
     {
-      title: '活动名称二',
-      dataIndex: 'readonly',
-      tooltip: '只读，使用form.getFieldValue可以获取到值',
-      readonly: true,
-      width: '15%',
+      dataIndex: 'userName',
+      title: '昵称',
     },
     {
-      title: '状态',
-      key: 'state',
-      dataIndex: 'state',
-      valueType: 'select',
-      valueEnum: {
-        all: { text: '全部', status: 'Default' },
-        open: {
-          text: '未解决',
-          status: 'Error',
-        },
-        closed: {
-          text: '已解决',
-          status: 'Success',
-        },
-      },
-    },
-    {
-      title: '描述',
-      align: 'center',
-      dataIndex: 'decs',
-    },
-    {
-      title: '活动时间',
-      align: 'center',
-      dataIndex: 'created_at',
-      valueType: 'date',
+      dataIndex: 'userAccount',
+      title: '账号',
+      sorter: true,
     },
     {
       title: '操作',
       align: 'center',
       valueType: 'option',
-      width: 200,
       render: (text, record, _, action) => (
         <Flex>
           <Button
@@ -113,6 +86,17 @@ export default () => {
     },
   ];
 
+  const handleRequest = async (params: API.UserQueryRequest) => {
+    const res = await listUserByPageUsingPost(params);
+    if (res.code === RESULT_CODE.SUCCESS && res.data) {
+      return {
+        success: true,
+        data: res.data.records,
+        total: res.data.total,
+      };
+    }
+  };
+
   return (
     <>
       <EditableProTable<DataSourceType>
@@ -126,11 +110,7 @@ export default () => {
         loading={false}
         toolBarRender={() => [<AddModal />]}
         columns={columns}
-        request={async () => ({
-          data: defaultData,
-          total: 3,
-          success: true,
-        })}
+        request={handleRequest as any}
         value={dataSource}
         onChange={setDataSource}
         editable={{
