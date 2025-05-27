@@ -19,12 +19,12 @@ export const routes: RouteType[] = [
         component: './Admin/UserAdmin',
       },
       {
-        name: '可编辑表单',
+        name: '可编辑表格',
         path: '/EditableTable',
         component: './EditableTable',
       },
       {
-        name: 'Test',
+        name: 'AI',
         path: '/test',
         component: './Test',
       },
