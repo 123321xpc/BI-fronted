@@ -1,11 +1,11 @@
-import { Flex } from 'antd';
+import { MyFlex } from '@/components/MyFlex';
 import styles from './index.less';
 
 type Props = {};
 
 const Component = (props: Props) => {
   const {} = props;
-  return <Flex className={styles.container}>new</Flex>;
+  return <MyFlex className={styles.container}>new</MyFlex>;
 };
 
 export default Component;

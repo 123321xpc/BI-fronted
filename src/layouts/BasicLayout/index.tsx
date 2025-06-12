@@ -1,4 +1,4 @@
-import { LOGO_URL, SYSTEM_NAME } from '@/constants';
+import { LOGO_URL, SYSTEM_NAME } from '@/constants/';
 import { Outlet, useLocation, useModel, useNavigate } from '@@/exports';
 import { PageContainer, ProLayout } from '@ant-design/pro-components';
 import { Avatar, Space, Tooltip } from 'antd';

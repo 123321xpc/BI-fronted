@@ -1,0 +1,68 @@
+.my-flex {
+  display: flex;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-justify-start {
+  justify-content: flex-start;
+}
+.flex-justify-center {
+  justify-content: center;
+}
+.flex-justify-end {
+  justify-content: flex-end;
+}
+.flex-justify-space-between {
+  justify-content: space-between;
+}
+.flex-justify-space-around {
+  justify-content: space-around;
+}
+.flex-justify-space-evenly {
+  justify-content: space-evenly;
+}
+
+.flex-align-start {
+  align-items: flex-start;
+}
+.flex-align-center {
+  align-items: center;
+}
+.flex-align-end {
+  align-items: flex-end;
+}
+.flex-align-stretch {
+  align-items: stretch;
+}
+.flex-align-baseline {
+  align-items: baseline;
+}
+
+.flex-gap {
+  gap: 8px;
+}
+
+.flex-board {
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px #ccc;
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 24px;
+}
+
+/* 尺寸和间距生成类 */
+.generate-size(@i) when (@i <= 500) {
+  .w-@{i} { width: ~"@{i}px"; }
+  .h-@{i} { height: ~"@{i}px"; }
+  .p-@{i} { padding: ~"@{i}px"; }
+  .pr-@{i} { padding: 0 ~"@{i}px"; }
+
+  .generate-size(@i + 1);
+}
+.generate-size(0);

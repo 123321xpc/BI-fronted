@@ -1,5 +1,5 @@
-import { defineConfig } from "@umijs/max";
-import { routes } from "./config/routes";
+import { defineConfig } from '@umijs/max';
+import { routes } from './config/routes';
 
 export default defineConfig({
   antd: {},
@@ -8,9 +8,8 @@ export default defineConfig({
   initialState: {},
   request: {},
   layout: {
-    title: "@umijs/max",
+    title: '@umijs/max',
   },
   routes: routes,
-  npmClient: "pnpm",
-  tailwindcss: {},
+  npmClient: 'pnpm',
 });

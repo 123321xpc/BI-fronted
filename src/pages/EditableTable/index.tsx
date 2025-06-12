@@ -1,4 +1,4 @@
-import { RESULT_CODE } from '@/constants';
+import { RESULT_CODE } from '@/constants/';
 import AddModal from '@/pages/EditableTable/AddModal';
 import { listUserByPageUsingPost } from '@/service/api/userController';
 import type { ProColumns } from '@ant-design/pro-components';

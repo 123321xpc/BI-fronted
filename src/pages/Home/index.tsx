@@ -1,14 +1,11 @@
-import axios from 'axios';
-import styles from './index.less';
+import { MyFlex } from '@/components/MyFlex';
+import { getLoginUserUsingGet } from '@/service/api/userController';
 
 const HomePage: React.FC = () => {
-  const res = axios.get('http://localhost:8080/api', {
-    params: {
-      id: ['1', '2', '3'],
-    },
+  getLoginUserUsingGet().then((res) => {
+    console.log(res);
   });
-
-  return <div className={styles.container}>121212</div>;
+  return <MyFlex></MyFlex>;
 };
 
 export default HomePage;

@@ -1,4 +1,4 @@
-import { LOGO_URL, SYSTEM_NAME } from '@/constants';
+import { LOGO_URL, SYSTEM_NAME } from '@/constants/';
 import { userLoginUsingPost } from '@/service/api/userController';
 import { useModel, useNavigate } from '@@/exports';
 import { useRequest } from '@@/plugin-request';
