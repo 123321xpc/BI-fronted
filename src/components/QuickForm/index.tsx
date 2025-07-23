@@ -31,6 +31,7 @@ export type Schema = {
     mode?: 'multiple' | 'tags';
     allowClear?: boolean;
     remove?: boolean;
+    hidden?: boolean;
     colProps?: any;
   };
 };

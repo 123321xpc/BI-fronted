@@ -1,6 +1,6 @@
-import { BASE_URL, RESULT_CODE } from '@/constants';
 import { message } from 'antd';
 import axios, { AxiosError } from 'axios';
+import { BASE_URL, RESULT_CODE } from './index';
 
 export type ResultType<T> = {
   code: number;

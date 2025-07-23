@@ -1,7 +1,7 @@
-import { DEFAULT_PAGE_SIZE, RESULT_CODE } from '@/constants/';
 import AddModal from '@/pages/Admin/UserAdmin/AddModal';
 import { listUserByPageUsingPost } from '@/service/api/userController';
 import { ProTable } from '@ant-design/pro-components';
+import { DEFAULT_PAGE_SIZE, RESULT_CODE } from '../../../../config';
 
 const columns = [
   {

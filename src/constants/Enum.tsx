@@ -59,6 +59,7 @@ export function createEnum<T extends Record<string, EnumItem>>(
   };
 }
 
+// Example usage:
 export const RESULT = createEnum({
   SUCCESS: {
     label: 'Success',

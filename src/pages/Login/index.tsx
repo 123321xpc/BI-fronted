@@ -1,4 +1,3 @@
-import { LOGO_URL, SYSTEM_NAME } from '@/constants/';
 import { userLoginUsingPost } from '@/service/api/userController';
 import { useModel, useNavigate } from '@@/exports';
 import { useRequest } from '@@/plugin-request';
@@ -9,6 +8,7 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { Tabs, theme } from 'antd';
+import { LOGO_URL, SYSTEM_NAME } from '../../../config';
 import styles from './index.less';
 
 export default () => {
@@ -21,7 +21,6 @@ export default () => {
     {
       manual: true,
       onSuccess: (res) => {
-        console.log(res);
         if (res) {
           updateUser(res as any);
           nav('/home');

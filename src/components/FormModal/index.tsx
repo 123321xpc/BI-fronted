@@ -79,7 +79,13 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     const api = submitApi ? submitApi : service[type];
 
     if (api) {
-      const res = await api(form.getFieldsValue());
+      const values = await form.validateFields();
+
+      if (type === 'create') {
+        delete values.id;
+      }
+
+      const res = await api(values);
       if (res.success && onSuccess) {
         onSuccess(res.data, form);
       }
@@ -110,7 +116,12 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
   return (
     <ModalForm
       layout={layout}
-      title={title || `${FORM_MODAL_TYPE[type].label}${objName}`}
+      title={
+        title ||
+        `${
+          FORM_MODAL_TYPE[type as keyof typeof FORM_MODAL_TYPE]?.label
+        }${objName}`
+      }
       open={open}
       onOpenChange={handleOpenChange}
       trigger={

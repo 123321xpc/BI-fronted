@@ -1,10 +1,10 @@
-import { RESULT_CODE } from '@/constants/';
 import AddModal from '@/pages/EditableTable/AddModal';
 import { listUserByPageUsingPost } from '@/service/api/userController';
 import type { ProColumns } from '@ant-design/pro-components';
 import { EditableProTable } from '@ant-design/pro-components';
 import { Button, Flex } from 'antd';
 import React, { useState } from 'react';
+import { RESULT_CODE } from '../../../config';
 
 type DataSourceType = {
   id: React.Key;
@@ -16,27 +16,6 @@ type DataSourceType = {
   update_at?: number;
   children?: DataSourceType[];
 };
-
-const defaultData: DataSourceType[] = [
-  {
-    id: 624748504,
-    title: '活动名称一',
-    readonly: '活动名称一',
-    decs: '这个活动真好玩',
-    state: 'open',
-    created_at: 1590486176000,
-    update_at: 1590486176000,
-  },
-  {
-    id: 624691229,
-    title: '活动名称二',
-    readonly: '活动名称二',
-    decs: '这个活动真好玩',
-    state: 'closed',
-    created_at: 1590481162000,
-    update_at: 1590481162000,
-  },
-];
 
 export default () => {
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
