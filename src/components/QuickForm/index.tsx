@@ -4,6 +4,7 @@ import {
   ProForm,
   ProFormCheckbox,
   ProFormDigit,
+  ProFormRadio,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
@@ -30,7 +31,7 @@ export type Schema = {
 /**
  * QuickForm Props：继承 ProFormProps + 自定义 schema
  */
-type QuickFormProps = {
+export type QuickFormProps = {
   schema: Schema;
   columns?: number;
 } & Omit<ProFormProps, 'colProps'>;
@@ -71,6 +72,14 @@ const QuickForm = ({ schema, columns = 1, ...props }: QuickFormProps) => {
               return <ProFormDigit key={key} {...commonProps} />;
             case 'checkbox':
               return <ProFormCheckbox key={key} {...commonProps} />;
+            case 'radio':
+              return (
+                <ProFormRadio.Group
+                  key={key}
+                  {...commonProps}
+                  options={rest.options}
+                />
+              );
             default:
               return null;
           }

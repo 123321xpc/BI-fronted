@@ -1,4 +1,4 @@
-import QuickForm, { Schema } from '@/components/QuickForm';
+import QuickForm, { QuickFormProps, Schema } from '@/components/QuickForm';
 import {
   ModalForm,
   ProFormInstance,
@@ -19,6 +19,7 @@ type Props = ProFormProps & {
   okText?: string;
   cancelText?: string;
   title?: string;
+  formProps?: Omit<QuickFormProps, 'schema'>;
   operatingType?: string;
   onSuccess?: (result: any, formValues: any, formRef: any) => boolean;
   onSubmit?: (formValues: any) => boolean;
@@ -37,6 +38,7 @@ const Component = (props: Props) => {
     okText,
     cancelText,
     title,
+    formProps = {},
     onSubmit,
     onSuccess,
     layout = 'horizontal',
@@ -75,7 +77,7 @@ const Component = (props: Props) => {
       }}
       {...rest}
     >
-      <QuickForm schema={schema} />
+      <QuickForm schema={schema} {...formProps} />
     </ModalForm>
   );
 };
