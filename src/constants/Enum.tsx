@@ -12,6 +12,7 @@ type EnumItem = {
     | 'purple'
     | 'cyan'
     | string;
+  disabled?: boolean;
 };
 
 type NormalizedEnumItem<K extends string> = {
@@ -19,6 +20,7 @@ type NormalizedEnumItem<K extends string> = {
   value: string | number;
   name: string;
   color: string;
+  disabled: boolean;
 };
 
 type NormalizeEnumData<T extends Record<string, EnumItem>> = {
@@ -42,7 +44,8 @@ export function createEnum<T extends Record<string, EnumItem>>(
     const name = item.name ?? key;
     const value = item.value;
     const color = item.color ?? 'black';
-    (result as any)[key] = { label, name, value, color };
+    const disabled = item.disabled ?? false;
+    (result as any)[key] = { label, name, value, color, disabled };
   }
 
   const values = Object.values(result);
@@ -53,7 +56,11 @@ export function createEnum<T extends Record<string, EnumItem>>(
 
   // ✅ 获取下拉选项
   const getOptions = () =>
-    values.map((i) => ({ label: i.label, value: i.value }));
+    values.map((i) => ({
+      label: i.label,
+      value: i.value,
+      disabled: i.disabled,
+    }));
 
   // ✅ 根据 value 获取完整对象
   const getItem = (
