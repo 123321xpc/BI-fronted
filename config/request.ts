@@ -2,6 +2,13 @@ import { BASE_URL, RESULT_CODE } from '@/constants';
 import { message } from 'antd';
 import axios, { AxiosError } from 'axios';
 
+export type ResultType<T> = {
+  code: number;
+  success: boolean;
+  message: string;
+  data: T;
+};
+
 const instance = axios.create({
   baseURL: BASE_URL,
   timeout: 100000,
