@@ -1,4 +1,4 @@
-import { MyFlex } from '@/components/MyFlex';
+import MyFlex from '@/components/MyFLex';
 import { useAllSearchParams } from '@/hooks/useAllSearchParams';
 
 const HomePage: React.FC = () => {
