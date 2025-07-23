@@ -1,37 +1,19 @@
-import { SelectOptionType } from '@/types';
+import QuickForm, { Schema } from '@/components/QuickForm';
 import {
   ModalForm,
-  ProFormCheckbox,
-  ProFormDigit,
   ProFormInstance,
   ProFormProps,
-  ProFormSelect,
-  ProFormText,
-  ProFormTextArea,
 } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import { ReactNode, useRef } from 'react';
-
-export type Schema = {
-  [key: string]: {
-    label?: string;
-    tooltip?: string;
-    placeholder?: string;
-    type?: 'input' | 'textarea' | 'number' | 'select' | 'checkbox' | 'radio';
-    options?: SelectOptionType[];
-    rules?: any[];
-    mode?: 'multiple' | 'tags';
-    allowClear?: boolean;
-  };
-};
 
 type Props = ProFormProps & {
   layout?: 'horizontal' | 'vertical' | 'inline';
   schema: Schema;
   trigger?: ReactNode;
-  width?: number; // 弹窗宽度，默认 600
+  width?: number;
   initialValue?: any;
-  OperatingType?: string; //  操作类型：新增或编辑...
+  OperatingType?: string;
   objName?: string;
   submitApi: (params: any) => Promise<any>;
   okText?: string;
@@ -39,7 +21,7 @@ type Props = ProFormProps & {
   title?: string;
   operatingType?: string;
   onSuccess?: (result: any, formValues: any, formRef: any) => boolean;
-  onSubmit?: (formValues: any) => boolean; // 返回true，关闭弹窗，返回false，不关闭弹窗
+  onSubmit?: (formValues: any) => boolean;
 };
 
 const Component = (props: Props) => {
@@ -65,11 +47,8 @@ const Component = (props: Props) => {
 
   const handleSubmit = async (formValues: any) => {
     if (onSubmit) return onSubmit(formValues);
-
     const res = await submitApi(formValues);
-
     if (onSuccess) return onSuccess(res, formValues, formRef);
-
     return res.success;
   };
 
@@ -96,56 +75,7 @@ const Component = (props: Props) => {
       }}
       {...rest}
     >
-      {Object.keys(schema).map((key) => {
-        const { label, type = 'input', ...rest } = schema[key];
-        switch (type) {
-          case 'input':
-            return (
-              <ProFormText
-                key={key}
-                name={key}
-                label={label || key}
-                {...rest}
-              />
-            );
-          case 'select':
-            return (
-              <ProFormSelect
-                key={key}
-                name={key}
-                label={label || key}
-                {...rest}
-              />
-            );
-          case 'textarea':
-            return (
-              <ProFormTextArea
-                key={key}
-                name={key}
-                label={label || key}
-                {...rest}
-              />
-            );
-          case 'number':
-            return (
-              <ProFormDigit
-                key={key}
-                name={key}
-                label={label || key}
-                {...rest}
-              />
-            );
-          case 'checkbox':
-            return (
-              <ProFormCheckbox
-                key={key}
-                name={key}
-                label={label || key}
-                {...rest}
-              />
-            );
-        }
-      })}
+      <QuickForm schema={schema} />
     </ModalForm>
   );
 };
