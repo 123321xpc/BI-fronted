@@ -28,6 +28,7 @@ type NormalizeEnumData<T extends Record<string, EnumItem>> = {
 type EnumMethods<T extends Record<string, EnumItem>> = {
   getLabel: (value: string | number) => string | undefined;
   getOptions: () => SelectOptionType[];
+  getItem: (value: string | number) => NormalizedEnumItem<string> | undefined; // ✅ 新增
 };
 
 export function createEnum<T extends Record<string, EnumItem>>(
@@ -46,20 +47,29 @@ export function createEnum<T extends Record<string, EnumItem>>(
 
   const values = Object.values(result);
 
+  // ✅ 根据 value 获取 label
   const getLabel = (value: string | number): string | undefined =>
     values.find((i) => i.value === value)?.label;
 
+  // ✅ 获取下拉选项
   const getOptions = () =>
     values.map((i) => ({ label: i.label, value: i.value }));
+
+  // ✅ 根据 value 获取完整对象
+  const getItem = (
+    value: string | number,
+  ): NormalizedEnumItem<string> | undefined =>
+    values.find((i) => i.value === value);
 
   return {
     ...result,
     getLabel,
     getOptions,
+    getItem,
   };
 }
 
-// Example usage:
+// ✅ 使用示例
 export const RESULT = createEnum({
   SUCCESS: {
     label: 'Success',
