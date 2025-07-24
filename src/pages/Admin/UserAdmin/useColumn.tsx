@@ -2,7 +2,6 @@ import { deleteUserUsingPost } from '@/api/userController';
 import { FormModalRef } from '@/components/FormModal';
 import { FORM_MODAL_TYPE } from '@/components/FormModal/config';
 import Operators from '@/components/Operators';
-import { red } from '@ant-design/colors';
 import { message } from 'antd';
 import { RefObject } from 'react';
 
@@ -38,7 +37,7 @@ export const useColumn = (modalRef: RefObject<FormModalRef>) => {
               {
                 key: 'delete',
                 text: '删除',
-                color: red[5],
+                color: 'danger',
                 click: () => {
                   deleteUserUsingPost({ id: record.id }).then((res) => {
                     if (res.success) {
