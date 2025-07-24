@@ -1,5 +1,6 @@
 import { FORM_MODAL_TYPE, FormModalType } from '@/components/FormModal/config';
 import QuickForm, { QuickFormProps, Schema } from '@/components/QuickForm';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   ActionType,
   FormInstance,
@@ -31,7 +32,7 @@ type Props = {
   layout?: 'horizontal' | 'vertical';
   tableRef?: MutableRefObject<ActionType>;
   schema: Schema;
-  trigger: ReactNode | string;
+  trigger?: ReactNode | string;
   initialValue?: any;
   objName?: string;
   submitApi?: any | any[];
@@ -67,6 +68,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
   const [form] = useForm();
   const [open, setOpen] = useState(false);
+  const isCreate = operatingType === FORM_MODAL_TYPE.add.key;
   const [type, setType] = useState<FormModalType>(operatingType);
 
   const filterSchema = useMemo(() => {
@@ -148,6 +150,17 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     return open ? handleOpen() : handleClose();
   };
 
+  const finalTrigger = trigger ? (
+    trigger
+  ) : (
+    <Button
+      icon={isCreate ? <PlusOutlined /> : undefined}
+      type={isCreate ? 'primary' : 'link'}
+    >
+      {trigger || '创建用户'}
+    </Button>
+  );
+
   return (
     <ModalForm
       layout={layout}
@@ -159,11 +172,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
       }
       open={open}
       onOpenChange={handleOpenChange}
-      trigger={
-        typeof trigger === 'string'
-          ? ((<Button type="link">{trigger}</Button>) as any)
-          : trigger
-      }
+      trigger={finalTrigger}
       initialValues={initialValue}
       autoFocusFirstInput
       onFinish={handleSubmit as any}

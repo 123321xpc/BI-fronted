@@ -7,7 +7,7 @@ import FormModal, { FormModalRef } from '@/components/FormModal';
 import { Schema } from '@/components/QuickForm';
 import { useColumn } from '@/pages/Admin/UserAdmin/useColumn';
 import { ActionType, ProTable } from '@ant-design/pro-components';
-import { Button, message } from 'antd';
+import { message } from 'antd';
 import { MutableRefObject, useRef } from 'react';
 import { DEFAULT_PAGE_SIZE } from '../../../../config';
 
@@ -53,6 +53,7 @@ export default () => {
       headerTitle="User Admin"
       toolBarRender={() => [
         <FormModal
+          operatingType={'add'}
           ref={modalRef}
           tableRef={tableRef as any}
           schema={schema}
@@ -62,7 +63,6 @@ export default () => {
           formProps={{
             labelCol: { span: 2 },
           }}
-          trigger={<Button type="primary">创建用户</Button>}
         />,
       ]}
     />
