@@ -27,7 +27,7 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   async (res: any) => {
-    res.success = res.data.code === RESULT_CODE.SUCCESS;
+    res.data.success = res.data.code === RESULT_CODE.SUCCESS;
 
     if (res.data.code === RESULT_CODE.NO_LOGIN) {
       await message.warning('您的登录信息已过期，请先登录！', 1.5);

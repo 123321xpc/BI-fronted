@@ -14,9 +14,9 @@ type Align = 'start' | 'center' | 'end' | 'stretch' | 'baseline';
 
 interface MyFlexProps {
   vertical?: boolean;
-  space?: boolean;
-  width?: number;
-  height?: number;
+  space?: boolean | number;
+  width?: number | string;
+  height?: number | string;
   padding?: number;
   paddingRow?: number;
   justify?: Justify;
@@ -46,29 +46,39 @@ const MyFlex: React.FC<MyFlexProps> = ({
       `flex-justify-${justify}`,
       `flex-align-${align}`,
       {
-        'flex-gap': space,
+        'flex-gap': space === true, // Only apply class when space is true
         'flex-board': board,
-        [`w-${width}`]: width !== undefined,
-        [`h-${height}`]: height !== undefined,
         [`p-${padding}`]: padding !== undefined,
         [`pr-${paddingRow}`]: paddingRow !== undefined,
       },
       className,
     );
-  }, [
-    vertical,
-    space,
-    width,
-    height,
-    padding,
-    paddingRow,
-    justify,
-    align,
-    board,
-    className,
-  ]);
+  }, [vertical, space, padding, paddingRow, justify, align, board, className]);
 
-  return <div className={computedClass}>{children}</div>;
+  const style = useMemo(() => {
+    const styleObj: React.CSSProperties = {};
+
+    if (width !== undefined) {
+      styleObj.width = typeof width === 'number' ? `${width}px` : width;
+    }
+
+    if (height !== undefined) {
+      styleObj.height = typeof height === 'number' ? `${height}px` : height;
+    }
+
+    // Handle space prop
+    if (space !== undefined && space !== false) {
+      styleObj.gap = typeof space === 'number' ? `${space}px` : '8px';
+    }
+
+    return styleObj;
+  }, [width, height, space]);
+
+  return (
+    <div className={computedClass} style={style}>
+      {children}
+    </div>
+  );
 };
 
 export default MyFlex;

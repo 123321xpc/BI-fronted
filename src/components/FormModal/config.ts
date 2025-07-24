@@ -1,11 +1,21 @@
-//  若要使用form-modal的 service 方法配置 api 接口，需要在此配置字段名
+type ObjType = {
+  [key: string]: {
+    key: string;
+    label: string; // 标签名
+    submitApiIdx: number; // submitApi 数组中对应api存放的位置
+  };
+};
 export const FORM_MODAL_TYPE = {
-  edit: {
+  update: {
+    key: 'update',
     label: '编辑',
+    submitApiIdx: 1,
   },
-  create: {
+  add: {
+    key: 'add',
     label: '创建',
+    submitApiIdx: 0,
   },
 };
 
-export type FormModalType = keyof typeof FORM_MODAL_TYPE | string;
+export type FormModalType = 'update' | 'add' | string;

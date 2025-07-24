@@ -2,7 +2,13 @@ import { FORM_MODAL_TYPE, FormModalType } from '@/components/FormModal/config';
 import QuickForm, { QuickFormProps, Schema } from '@/components/QuickForm';
 import { FormInstance, ModalForm, ProForm } from '@ant-design/pro-components';
 import { Button, message, ModalProps } from 'antd';
-import { forwardRef, ReactNode, useImperativeHandle, useState } from 'react';
+import {
+  forwardRef,
+  ReactNode,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
 import { ResultType } from '../../../config/request';
 import useForm = ProForm.useForm;
 
@@ -19,9 +25,8 @@ type Props = {
   trigger: ReactNode | string;
   initialValue?: any;
   objName?: string;
-  service?: any; // 创建和编辑窗口，传入service对象
-  submitApi?: (params?: any) => Promise<ResultType<any>>; // 其他窗口，传入submitApi
-  formProps?: QuickFormProps;
+  submitApi?: any | any[];
+  formProps?: Omit<QuickFormProps, 'schema'>;
   operatingType?: FormModalType;
   onSuccess?: (result: ResultType<any>, form: FormInstance) => boolean;
   onSubmit?: (form: FormInstance) => boolean;
@@ -38,7 +43,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
   const {
     schema,
     trigger,
-    operatingType = 'create',
+    operatingType = FORM_MODAL_TYPE.add.key,
     initialValue,
     objName,
     submitApi,
@@ -46,7 +51,6 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     formProps = {},
     onSubmit,
     onSuccess,
-    service,
     layout = 'horizontal',
     ...rest
   } = props;
@@ -55,12 +59,22 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<FormModalType>(operatingType);
 
+  const filterSchema = useMemo(() => {
+    const newSchema = { ...schema };
+
+    if (type === FORM_MODAL_TYPE.add.key) {
+      delete newSchema.id;
+    }
+
+    return newSchema;
+  }, [schema, type]);
+
   useImperativeHandle(ref, () => ({
     open: handleOpen,
     close: handleClose,
     share: (initialValues?: any, type?: FormModalType) => {
       //  share默认为编辑窗口
-      setType(type || 'edit');
+      setType(type || FORM_MODAL_TYPE.update.key);
       if (initialValues) {
         form.setFieldsValue(initialValues);
       }
@@ -76,18 +90,23 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
     if (onSubmit) return onSubmit(form);
 
-    const api = submitApi ? submitApi : service[type];
+    const api = Array.isArray(submitApi)
+      ? submitApi[
+          FORM_MODAL_TYPE[type as keyof typeof FORM_MODAL_TYPE]?.submitApiIdx
+        ]
+      : submitApi;
 
     if (api) {
       const values = await form.validateFields();
 
-      if (type === 'create') {
+      if (type === FORM_MODAL_TYPE.add.key) {
         delete values.id;
       }
 
-      const res = await api(values);
+      const res: ResultType<any> = await api(values);
+
       if (res.success && onSuccess) {
-        onSuccess(res.data, form);
+        onSuccess(res, form);
       }
 
       return res.success;
@@ -105,7 +124,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
   const handleClose = () => {
     setOpen(false);
-    setType('create');
+    setType(FORM_MODAL_TYPE.add.key);
     form.resetFields();
   };
 
@@ -141,7 +160,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
         {...formProps}
         form={form}
         footer={false}
-        schema={schema}
+        schema={filterSchema}
         initialValues={initialValue}
         layout={layout}
       />

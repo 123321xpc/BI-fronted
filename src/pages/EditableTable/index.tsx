@@ -1,5 +1,5 @@
+import { listUserByPageUsingPost } from '@/api/userController';
 import AddModal from '@/pages/EditableTable/AddModal';
-import { listUserByPageUsingPost } from '@/service/api/userController';
 import type { ProColumns } from '@ant-design/pro-components';
 import { EditableProTable } from '@ant-design/pro-components';
 import { Button, Flex } from 'antd';

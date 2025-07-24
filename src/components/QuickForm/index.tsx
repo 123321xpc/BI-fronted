@@ -63,7 +63,7 @@ const QuickForm = forwardRef<QuickFormRef, QuickFormProps>(
 
       if (api) {
         api(form.getFieldsValue()).then((res) => {
-          if (res.success && onSuccess) {
+          if (onSuccess) {
             onSuccess(res.data, form);
           }
         });

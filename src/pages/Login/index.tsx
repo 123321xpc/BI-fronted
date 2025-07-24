@@ -1,4 +1,4 @@
-import { userLoginUsingPost } from '@/service/api/userController';
+import { userLoginUsingPost } from '@/api/userController';
 import { useModel, useNavigate } from '@@/exports';
 import { useRequest } from '@@/plugin-request';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';

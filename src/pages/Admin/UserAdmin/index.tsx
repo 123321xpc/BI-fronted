@@ -1,35 +1,37 @@
-import AddModal from '@/pages/Admin/UserAdmin/AddModal';
-import { listUserByPageUsingPost } from '@/service/api/userController';
+import {
+  addUserUsingPost,
+  listUserByPageUsingPost,
+  updateUserUsingPost,
+} from '@/api/userController';
+import FormModal, { FormModalRef } from '@/components/FormModal';
+import { Schema } from '@/components/QuickForm';
+import { useColumn } from '@/pages/Admin/UserAdmin/useColumn';
 import { ProTable } from '@ant-design/pro-components';
-import { DEFAULT_PAGE_SIZE, RESULT_CODE } from '../../../../config';
+import { Button, message } from 'antd';
+import { useRef } from 'react';
+import { DEFAULT_PAGE_SIZE } from '../../../../config';
 
-const columns = [
-  {
-    dataIndex: 'id',
-    title: 'ID',
-    width: 48,
+const schema: Schema = {
+  id: {},
+  userName: {
+    label: '昵称',
   },
-  {
-    dataIndex: 'userName',
-    title: '昵称',
-    width: 48,
+  userAccount: {
+    label: '账号',
   },
-  {
-    dataIndex: 'userAccount',
-    title: '账号',
-    width: 48,
-    sorter: true,
-  },
-];
+};
 
 export default () => {
+  const modalRef = useRef<FormModalRef>(null);
+  const columns = useColumn(modalRef);
+
   const handleRequest = async (params: API.UserQueryRequest) => {
     const res = await listUserByPageUsingPost(params);
-    if (res.code === RESULT_CODE.SUCCESS && res.data) {
+    if (res.success) {
       return {
         success: true,
-        data: res.data.records,
-        total: res.data.total,
+        data: res.data?.records,
+        total: res.data?.total,
       };
     }
   };
@@ -47,7 +49,19 @@ export default () => {
         pageSize: DEFAULT_PAGE_SIZE,
       }}
       headerTitle="User Admin"
-      toolBarRender={() => [<AddModal />]}
+      toolBarRender={() => [
+        <FormModal
+          ref={modalRef}
+          schema={schema}
+          objName={'用户'}
+          onSuccess={() => message.success('操作成功') as any}
+          submitApi={[addUserUsingPost, updateUserUsingPost]}
+          formProps={{
+            labelCol: { span: 2 },
+          }}
+          trigger={<Button type="primary">创建用户</Button>}
+        />,
+      ]}
     />
   );
 };
