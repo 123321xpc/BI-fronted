@@ -1,9 +1,15 @@
 import { FORM_MODAL_TYPE, FormModalType } from '@/components/FormModal/config';
 import QuickForm, { QuickFormProps, Schema } from '@/components/QuickForm';
-import { FormInstance, ModalForm, ProForm } from '@ant-design/pro-components';
+import {
+  ActionType,
+  FormInstance,
+  ModalForm,
+  ProForm,
+} from '@ant-design/pro-components';
 import { Button, message, ModalProps } from 'antd';
 import {
   forwardRef,
+  MutableRefObject,
   ReactNode,
   useImperativeHandle,
   useMemo,
@@ -17,10 +23,13 @@ import useForm = ProForm.useForm;
  *  - 1. 传入onSubmit，直接交给外部处理
  *  - 2. 传入submitApi，使用submitApi接口提交表单
  *  - 3. 传入service，使用service接口的方法提交表单
+ *
+ *  如果是和表格配合使用，可以传入tableRef自动刷新表格
  */
 
 type Props = {
   layout?: 'horizontal' | 'vertical';
+  tableRef?: MutableRefObject<ActionType>;
   schema: Schema;
   trigger: ReactNode | string;
   initialValue?: any;
@@ -46,6 +55,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     operatingType = FORM_MODAL_TYPE.add.key,
     initialValue,
     objName,
+    tableRef,
     submitApi,
     title,
     formProps = {},
@@ -105,8 +115,14 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
       const res: ResultType<any> = await api(values);
 
-      if (res.success && onSuccess) {
-        onSuccess(res, form);
+      if (res.success) {
+        if (tableRef) {
+          tableRef.current?.reload();
+        }
+
+        if (onSuccess) {
+          onSuccess(res, form);
+        }
       }
 
       return res.success;

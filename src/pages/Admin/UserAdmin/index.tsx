@@ -6,9 +6,9 @@ import {
 import FormModal, { FormModalRef } from '@/components/FormModal';
 import { Schema } from '@/components/QuickForm';
 import { useColumn } from '@/pages/Admin/UserAdmin/useColumn';
-import { ProTable } from '@ant-design/pro-components';
+import { ActionType, ProTable } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
-import { useRef } from 'react';
+import { MutableRefObject, useRef } from 'react';
 import { DEFAULT_PAGE_SIZE } from '../../../../config';
 
 const schema: Schema = {
@@ -23,7 +23,8 @@ const schema: Schema = {
 
 export default () => {
   const modalRef = useRef<FormModalRef>(null);
-  const columns = useColumn(modalRef);
+  const tableRef = useRef<MutableRefObject<ActionType>>(null);
+  const columns = useColumn(modalRef, tableRef as any);
 
   const handleRequest = async (params: API.UserQueryRequest) => {
     const res = await listUserByPageUsingPost(params);
@@ -39,6 +40,7 @@ export default () => {
   return (
     <ProTable
       columns={columns}
+      actionRef={tableRef as any}
       cardBordered
       request={handleRequest as any}
       rowKey="id"
@@ -52,6 +54,7 @@ export default () => {
       toolBarRender={() => [
         <FormModal
           ref={modalRef}
+          tableRef={tableRef as any}
           schema={schema}
           objName={'用户'}
           onSuccess={() => message.success('操作成功') as any}

@@ -2,10 +2,14 @@ import { deleteUserUsingPost } from '@/api/userController';
 import { FormModalRef } from '@/components/FormModal';
 import { FORM_MODAL_TYPE } from '@/components/FormModal/config';
 import Operators from '@/components/Operators';
+import { ActionType } from '@ant-design/pro-components';
 import { message } from 'antd';
-import { RefObject } from 'react';
+import { MutableRefObject, RefObject } from 'react';
 
-export const useColumn = (modalRef: RefObject<FormModalRef>) => {
+export const useColumn = (
+  modalRef: RefObject<FormModalRef>,
+  tableRef: MutableRefObject<ActionType>,
+) => {
   return [
     {
       dataIndex: 'id',
@@ -42,6 +46,7 @@ export const useColumn = (modalRef: RefObject<FormModalRef>) => {
                   deleteUserUsingPost({ id: record.id }).then((res) => {
                     if (res.success) {
                       message.success('删除成功');
+                      tableRef.current?.reload();
                     }
                   });
                 },

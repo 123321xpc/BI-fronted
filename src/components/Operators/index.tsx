@@ -1,6 +1,11 @@
 import MyFlex from '@/components/MyFLex';
 import { Button, ButtonProps } from 'antd';
 
+/**
+ *  外侧和内侧均可传入 btn 的所有属性（内侧会覆盖外侧）
+ *  color 可传 16 进制
+ */
+
 type Props = {
   options: ({
     key: string;
