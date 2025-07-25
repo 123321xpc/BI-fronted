@@ -68,8 +68,11 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
   const [form] = useForm();
   const [open, setOpen] = useState(false);
-  const isCreate = operatingType === FORM_MODAL_TYPE.add.key;
   const [type, setType] = useState<FormModalType>(operatingType);
+
+  const isCreate = useMemo(() => {
+    return type === FORM_MODAL_TYPE.add.key;
+  }, [type]);
 
   const filterSchema = useMemo(() => {
     const newSchema = { ...schema };
@@ -172,7 +175,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
       }
       open={open}
       onOpenChange={handleOpenChange}
-      trigger={finalTrigger}
+      trigger={finalTrigger as any}
       initialValues={initialValue}
       autoFocusFirstInput
       onFinish={handleSubmit as any}
