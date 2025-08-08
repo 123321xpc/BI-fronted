@@ -1,7 +1,7 @@
-import MyFlex from '@/components/MyFLex';
+import Flex from '@/components/Flex';
 
 const HomePage: React.FC = () => {
-  return <MyFlex vertical>home page</MyFlex>;
+  return <Flex vertical>home page</Flex>;
 };
 
 export default HomePage;
