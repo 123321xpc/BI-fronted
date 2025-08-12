@@ -61,9 +61,9 @@ const Flex: FC<MyFlexProps> = ({
   align = 'center',
   board,
   gap = 8,
-  className,
   style,
   children,
+  ...rest
 }) => {
   const mergedStyle: React.CSSProperties = {
     width: typeof width === 'number' ? `${width}px` : width,
@@ -92,8 +92,8 @@ const Flex: FC<MyFlexProps> = ({
       justify={justify}
       align={align}
       gap={gap}
-      className={className}
       style={mergedStyle}
+      {...rest}
     >
       {children}
     </AntdFlex>
