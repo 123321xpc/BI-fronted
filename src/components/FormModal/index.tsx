@@ -60,7 +60,7 @@ type Props = {
   objName?: string;
 
   /**
-   * @description 表单提交的 API 方法，可以是单个方法，也可以是按操作类型分的数组
+   * @description 表单提交的 API 方法，可以是单个方法，也可以是按操作类型分的数组(数组中各方法的位置需要在config.ts中配置)
    */
   submitApi?: any | any[];
 
@@ -98,7 +98,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     trigger,
     operatingType = FORM_MODAL_TYPE.add.key,
     initialValue,
-    objName,
+    objName = '用户',
     tableRef,
     submitApi,
     title,
@@ -116,15 +116,6 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
   // 是否为创建模式
   const isCreate = useMemo(() => type === FORM_MODAL_TYPE.add.key, [type]);
-
-  // 根据操作类型过滤 schema（新增时移除 id 字段）
-  const filterSchema = useMemo(() => {
-    const newSchema = { ...schema };
-    if (type === FORM_MODAL_TYPE.add.key) {
-      delete newSchema.id;
-    }
-    return newSchema;
-  }, [schema, type]);
 
   // 暴露方法给父组件调用
   useImperativeHandle(ref, () => ({
@@ -200,16 +191,19 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
   };
 
   // 触发按钮，未传入 trigger 时使用默认
-  const finalTrigger = trigger ? (
-    trigger
-  ) : (
-    <Button
-      icon={isCreate ? <PlusOutlined /> : undefined}
-      type={isCreate ? 'primary' : 'link'}
-    >
-      {trigger || '创建用户'}
-    </Button>
-  );
+  const finalTrigger = useMemo(() => {
+    if (trigger === false || trigger === null) return null;
+    return trigger ? (
+      trigger
+    ) : (
+      <Button
+        icon={isCreate ? <PlusOutlined /> : undefined}
+        type={isCreate ? 'primary' : 'link'}
+      >
+        {trigger || '创建用户'}
+      </Button>
+    );
+  }, [trigger]);
 
   return (
     <ModalForm
@@ -232,10 +226,11 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
       }}
     >
       <QuickForm
+        style={{ marginTop: 16 }}
         {...formProps}
         form={form}
         footer={false}
-        schema={filterSchema}
+        schema={schema}
         initialValues={initialValue}
         layout={layout}
       />

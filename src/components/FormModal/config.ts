@@ -1,11 +1,12 @@
 type ObjType = {
   [key: string]: {
-    key: string;
-    label: string; // 标签名
-    submitApiIdx: number; // submitApi 数组中对应api存放的位置
+    key: FormModalType;
+    label: string; //  标题的拼接字段
+    submitApiIdx: number; //  对应api的索引（submitApi为数组时使用）
   };
 };
-export const FORM_MODAL_TYPE = {
+
+export const FORM_MODAL_TYPE: ObjType = {
   update: {
     key: 'update',
     label: '编辑',
@@ -16,6 +17,11 @@ export const FORM_MODAL_TYPE = {
     label: '创建',
     submitApiIdx: 0,
   },
+  delete: {
+    key: 'delete',
+    label: '删除',
+    submitApiIdx: 1,
+  },
 };
 
-export type FormModalType = 'update' | 'add' | string;
+export type FormModalType = 'update' | 'add' | 'delete' | string;
