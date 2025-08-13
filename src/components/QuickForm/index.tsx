@@ -13,7 +13,7 @@ import {
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef } from 'react';
 import { ResultType } from '../../../config/request';
 import useForm = ProForm.useForm;
 
@@ -48,9 +48,9 @@ export type Schema = {
 };
 
 /**
- * @description QuickForm 暴露给外部的 ref 类型
+ * @description QuickForm 暴露给外部的 ref 类型（使用 ProForm 的 formRef）
  */
-export type QuickFormRef = {};
+export type QuickFormRef = FormInstance;
 
 /**
  * @description QuickForm 组件的 Props 定义
@@ -80,16 +80,13 @@ const QuickForm = forwardRef<QuickFormRef, QuickFormProps>(
     { schema, columns = 1, footer, onSubmit, onSuccess, api, ...props },
     ref,
   ) => {
-    // 默认列宽计算（24 栅格除以列数）
     const defaultColProps = { span: 24 / columns };
-
-    // 创建表单实例
     const [form] = useForm() as [form: FormInstance];
 
     /**
-     * @description 表单提交逻辑
+     * 表单提交逻辑
      * - 如果有 onSubmit 则优先执行
-     * - 否则执行 api 请求并在成功后调用 onSuccess
+     * - 否则调用 api 并触发 onSuccess
      */
     const handleSubmit = () => {
       if (onSubmit) return onSubmit(form);
@@ -103,17 +100,14 @@ const QuickForm = forwardRef<QuickFormRef, QuickFormProps>(
       }
     };
 
-    // 暴露 ref 方法（这里暂时为空对象）
-    useImperativeHandle(ref, () => ({}));
-
     return (
       <ProForm
         grid
         form={form}
-        submitter={footer as any}
+        formRef={ref as any}
+        submitter={footer}
         onFinish={handleSubmit}
         {...props}
-        {...(footer !== undefined ? { submitter: footer } : {})}
       >
         {Object.keys(schema)
           .filter((key) => !schema[key].remove)
@@ -127,17 +121,16 @@ const QuickForm = forwardRef<QuickFormRef, QuickFormProps>(
               ...rest
             } = schema[key];
 
-            // 公共属性
             const commonProps = {
               name: key,
               label: label || key,
               tooltip,
               rules,
+              hidden: schema[key].hidden,
               colProps: colProps ?? defaultColProps,
               ...rest,
             };
 
-            // 按 type 渲染对应表单组件
             switch (type) {
               case 'input':
                 return <ProFormText key={key} {...commonProps} />;

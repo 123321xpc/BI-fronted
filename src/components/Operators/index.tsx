@@ -1,26 +1,5 @@
-import Flex from '@/components/Flex';
+import Flex, { MyFlexProps } from '@/components/Flex';
 import { Button, ButtonProps } from 'antd';
-
-/**
- * @description 颜色类型定义，可以是ant预设颜色字符串或任意自定义颜色（如 HEX）
- */
-type Color =
-  | 'default'
-  | 'primary'
-  | 'danger'
-  | 'blue'
-  | 'purple'
-  | 'cyan'
-  | 'green'
-  | 'magenta'
-  | 'pink'
-  | 'orange'
-  | 'yellow'
-  | 'volcano'
-  | 'geekblue'
-  | 'lime'
-  | 'gold'
-  | string;
 
 /**
  * @description Operators 组件的参数类型定义
@@ -29,7 +8,7 @@ type Props = {
   /** @description 外层容器的类名 */
   className?: string;
   /** @description 外层容器的样式 */
-  style?: React.CSSProperties;
+  layout?: Omit<MyFlexProps, 'children'>;
   /** @description 每个子按钮/组件的样式 */
   childrenStyle?: React.CSSProperties;
   /**
@@ -44,21 +23,20 @@ type Props = {
   options: ({
     key: string | number;
     text?: string;
-    color?: Color;
     component?: React.ReactNode;
     hide?: boolean;
-  } & Omit<ButtonProps, 'color'>)[];
+  } & ButtonProps)[];
   /** @description 按钮或组件之间的间距，默认 8px */
   gap?: number;
   /** @description 全局默认颜色（被单个 option.color 覆盖） */
-  color?: Color;
-} & Omit<ButtonProps, 'color'>;
+} & ButtonProps;
 
 /**
  * @description 多操作按钮/组件布局组件
  */
 const Operators = ({
   options,
+  layout,
   gap = 8,
   variant = 'link',
   color = 'primary',
@@ -70,7 +48,7 @@ const Operators = ({
   const filteredOptions = options.filter((option) => !option.hide);
 
   return (
-    <Flex gap={gap} width="fit-content" className={className} style={style}>
+    <Flex {...layout} gap={gap} className={className} style={style}>
       {filteredOptions.map((opt) => {
         const { key, text, component, color: optColor, ...objRest } = opt;
         const finalColor = optColor || color; // 优先使用单项颜色
@@ -84,12 +62,9 @@ const Operators = ({
           // 否则渲染按钮
           <Button
             key={key}
-            variant={variant}
             {...rest}
             {...objRest}
-            {...(finalColor?.startsWith('#')
-              ? { style: { ...childrenStyle, color: finalColor } }
-              : { style: childrenStyle, color: finalColor as any })}
+            color={finalColor}
             style={{ ...childrenStyle, ...opt.style }}
           >
             {text}

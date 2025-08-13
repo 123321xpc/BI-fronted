@@ -1,7 +1,7 @@
 import { Flex as AntdFlex, FlexProps } from 'antd';
 import React, { FC, ReactNode } from 'react';
 
-type MyFlexProps = {
+export type MyFlexProps = {
   /**
    * @description 设置容器宽度
    */
