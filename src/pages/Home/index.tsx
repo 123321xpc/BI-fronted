@@ -1,15 +1,31 @@
 import Flex from '@/components/Flex';
-import FormModal from '@/components/FormModal';
+import FormModal, { FormModalRef, SchemaFunc } from '@/components/FormModal';
+import { Button } from 'antd';
+import { useCallback, useRef } from 'react';
 
 const HomePage: React.FC = () => {
-  const schema = {
-    name: {},
-    id: {},
-  };
+  const modalRef = useRef<FormModalRef>(null);
+
+  const schema = useCallback<SchemaFunc>((form, modalType) => {
+    return {
+      id: {
+        remove: modalType === 'add', // 在新增时，删除 id 字段
+      },
+      name: {},
+    };
+  }, []);
 
   return (
     <Flex vertical>
-      <FormModal schema={schema} />
+      <Button
+        onClick={() => modalRef.current?.share({ id: 1, name: 'btn1' }, 'add')}
+      >
+        add
+      </Button>
+      <Button onClick={() => modalRef.current?.share({ id: 2, name: 'btn2' })}>
+        update
+      </Button>
+      <FormModal ref={modalRef} schema={schema} trigger={null} />
     </Flex>
   );
 };

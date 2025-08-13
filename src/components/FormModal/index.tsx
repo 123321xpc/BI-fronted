@@ -19,14 +19,10 @@ import {
 import { ResultType } from '../../../config/request';
 import useForm = ProForm.useForm;
 
-/**
- *  提交表单的优先级：
- *  1. 传入 onSubmit（完全由外部接管提交逻辑）
- *  2. 传入 submitApi（调用指定 API 提交）
- *  3. 传入 service（调用 service 方法提交）
- *
- *  配合表格使用时，可传入 tableRef 自动刷新表格
- */
+export type SchemaFunc = (
+  form: FormInstance,
+  modalType: FormModalType | string,
+) => Schema;
 
 type Props = {
   /**
@@ -42,7 +38,7 @@ type Props = {
   /**
    * @description 表单结构定义（QuickForm 的 schema）
    */
-  schema: Schema;
+  schema: Schema | SchemaFunc;
 
   /**
    * @description 自定义触发器（按钮或任意节点）。不传时将使用默认按钮
@@ -205,6 +201,14 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     );
   }, [trigger]);
 
+  const finalSchema = useMemo(() => {
+    console.log(
+      'finalSchema',
+      typeof schema === 'function' ? schema(form, type) : schema,
+    );
+    return typeof schema === 'function' ? schema(form, type) : schema;
+  }, [schema, type]);
+
   return (
     <ModalForm
       layout={layout}
@@ -230,7 +234,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
         {...formProps}
         form={form}
         footer={false}
-        schema={schema}
+        schema={finalSchema}
         initialValues={initialValue}
         layout={layout}
       />
