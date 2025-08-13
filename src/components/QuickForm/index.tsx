@@ -110,7 +110,7 @@ const QuickForm = forwardRef<QuickFormRef, QuickFormProps>(
       <ProForm
         grid
         form={form}
-        submitter={}
+        submitter={footer as any}
         onFinish={handleSubmit}
         {...props}
         {...(footer !== undefined ? { submitter: footer } : {})}

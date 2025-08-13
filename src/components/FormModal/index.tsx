@@ -20,25 +20,68 @@ import { ResultType } from '../../../config/request';
 import useForm = ProForm.useForm;
 
 /**
- *  提交表单有以下3种方法（优先级递减）：
- *  - 1. 传入onSubmit，直接交给外部处理
- *  - 2. 传入submitApi，使用submitApi接口提交表单
- *  - 3. 传入service，使用service接口的方法提交表单
+ *  提交表单的优先级：
+ *  1. 传入 onSubmit（完全由外部接管提交逻辑）
+ *  2. 传入 submitApi（调用指定 API 提交）
+ *  3. 传入 service（调用 service 方法提交）
  *
- *  如果是和表格配合使用，可以传入tableRef自动刷新表格
+ *  配合表格使用时，可传入 tableRef 自动刷新表格
  */
 
 type Props = {
+  /**
+   * @description 表单布局方式，可选 horizontal（水平）或 vertical（垂直），默认 horizontal
+   */
   layout?: 'horizontal' | 'vertical';
+
+  /**
+   * @description 可选，表格的 ref 对象。传入后在表单提交成功时会自动调用 tableRef.current.reload() 刷新表格
+   */
   tableRef?: MutableRefObject<ActionType>;
+
+  /**
+   * @description 表单结构定义（QuickForm 的 schema）
+   */
   schema: Schema;
+
+  /**
+   * @description 自定义触发器（按钮或任意节点）。不传时将使用默认按钮
+   */
   trigger?: ReactNode | string;
+
+  /**
+   * @description 表单初始值
+   */
   initialValue?: any;
+
+  /**
+   * @description 操作对象名称，会拼接在弹窗标题后，例如“新增用户”、“编辑合同”
+   */
   objName?: string;
+
+  /**
+   * @description 表单提交的 API 方法，可以是单个方法，也可以是按操作类型分的数组
+   */
   submitApi?: any | any[];
+
+  /**
+   * @description 传递给 QuickForm 的额外属性（除 schema 外）
+   */
   formProps?: Omit<QuickFormProps, 'schema'>;
+
+  /**
+   * @description 当前操作类型（新增/编辑），默认 FORM_MODAL_TYPE.add.key
+   */
   operatingType?: FormModalType;
+
+  /**
+   * @description 表单提交成功后的回调
+   */
   onSuccess?: (result: ResultType<any>, form: FormInstance) => boolean;
+
+  /**
+   * @description 自定义提交方法，返回布尔值。若设置该方法，则不会调用 submitApi
+   */
   onSubmit?: (form: FormInstance) => boolean;
 } & ModalProps;
 
@@ -66,29 +109,29 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     ...rest
   } = props;
 
+  // antd-pro form 实例
   const [form] = useForm();
-  const [open, setOpen] = useState(false);
-  const [type, setType] = useState<FormModalType>(operatingType);
+  const [open, setOpen] = useState(false); // 控制 ModalForm 显示
+  const [type, setType] = useState<FormModalType>(operatingType); // 当前操作类型
 
-  const isCreate = useMemo(() => {
-    return type === FORM_MODAL_TYPE.add.key;
-  }, [type]);
+  // 是否为创建模式
+  const isCreate = useMemo(() => type === FORM_MODAL_TYPE.add.key, [type]);
 
+  // 根据操作类型过滤 schema（新增时移除 id 字段）
   const filterSchema = useMemo(() => {
     const newSchema = { ...schema };
-
     if (type === FORM_MODAL_TYPE.add.key) {
       delete newSchema.id;
     }
-
     return newSchema;
   }, [schema, type]);
 
+  // 暴露方法给父组件调用
   useImperativeHandle(ref, () => ({
     open: handleOpen,
     close: handleClose,
     share: (initialValues?: any, type?: FormModalType) => {
-      //  share默认为编辑窗口
+      // 默认打开为编辑模式
       setType(type || FORM_MODAL_TYPE.update.key);
       if (initialValues) {
         form.setFieldsValue(initialValues);
@@ -98,13 +141,18 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     form,
   }));
 
+  /**
+   * 提交处理逻辑
+   */
   const handleSubmit = async () => {
     if (!form) {
       return Promise.reject('No form instance found');
     }
 
+    // 优先使用自定义 onSubmit
     if (onSubmit) return onSubmit(form);
 
+    // 获取对应 API（如果是数组则按类型选择）
     const api = Array.isArray(submitApi)
       ? submitApi[
           FORM_MODAL_TYPE[type as keyof typeof FORM_MODAL_TYPE]?.submitApiIdx
@@ -114,6 +162,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     if (api) {
       const values = await form.validateFields();
 
+      // 新增时移除 id
       if (type === FORM_MODAL_TYPE.add.key) {
         delete values.id;
       }
@@ -121,38 +170,36 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
       const res: ResultType<any> = await api(values);
 
       if (res.success) {
-        if (tableRef) {
-          tableRef.current?.reload();
-        }
+        // 刷新表格
+        tableRef?.current?.reload();
 
-        if (onSuccess) {
-          onSuccess(res, form);
-        }
+        // 成功回调
+        onSuccess?.(res, form);
       }
 
       return res.success;
     }
 
+    // 无 API 提示
     Promise.reject('No submitApi provided');
     message.error(`type = ${type}, 无 API 提供， 无法提交表单`);
-
     return false;
   };
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  const handleOpen = () => setOpen(true);
 
   const handleClose = () => {
     setOpen(false);
-    setType(FORM_MODAL_TYPE.add.key);
-    form.resetFields();
+    setType(FORM_MODAL_TYPE.add.key); // 重置为新增模式
+    form.resetFields(); // 清空表单
   };
 
+  // ModalForm 的 open 状态变化时同步处理
   const handleOpenChange = (open: boolean) => {
     return open ? handleOpen() : handleClose();
   };
 
+  // 触发按钮，未传入 trigger 时使用默认
   const finalTrigger = trigger ? (
     trigger
   ) : (
