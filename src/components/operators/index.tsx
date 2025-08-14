@@ -1,4 +1,4 @@
-import Flex, { MyFlexProps } from '@/components/Flex';
+import Flex, { MyFlexProps } from '@/components/flex';
 import { Button, ButtonProps } from 'antd';
 
 /**

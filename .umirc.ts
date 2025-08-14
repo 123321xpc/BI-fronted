@@ -1,4 +1,5 @@
 import { defineConfig } from '@umijs/max';
+import * as path from 'node:path';
 import { routes } from './config/routes';
 
 export default defineConfig({
@@ -12,4 +13,8 @@ export default defineConfig({
   },
   routes: routes,
   npmClient: 'pnpm',
+  alias: {
+    '@': path.resolve(__dirname, 'src'),
+    src: path.resolve(__dirname, 'src'),
+  },
 });

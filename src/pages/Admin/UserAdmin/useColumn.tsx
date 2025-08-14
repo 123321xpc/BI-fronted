@@ -1,11 +1,11 @@
 import { deleteUserUsingPost } from '@/api/userController';
+import { FormModalRef } from '@/components/form-modal';
 import { FORM_MODAL_TYPE } from '@/components/form-modal/config';
+import Operators from '@/components/operators';
 import { ColumnsType, useColumnProps } from '@/hooks/useColumnProps';
 import { ActionType } from '@ant-design/pro-components';
 import { message } from 'antd';
 import { MutableRefObject, RefObject, useMemo } from 'react';
-import { FormModalRef } from 'src/components/form-modal';
-import Operators from 'src/components/operators';
 
 export const useColumn = (
   modalRef: RefObject<FormModalRef>,
