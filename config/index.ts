@@ -1,4 +1,5 @@
-export const LOGO_URL = 'https://vip.123pan.cn/1828962653/16458182';
+export const LOGO_URL =
+  'http://t0ct9rt8p.hd-bkt.clouddn.com/image-20250814105529379.png';
 export const BASE_URL = 'http://localhost:8101';
 export const SYSTEM_NAME = 'SYSTEM_NAME';
 
