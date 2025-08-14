@@ -34,13 +34,13 @@ export const useColumn = (
                 {
                   key: FORM_MODAL_TYPE.update.key,
                   text: FORM_MODAL_TYPE.update.label,
-                  click: () => modalRef.current?.share(record),
+                  onClick: () => modalRef.current?.share(record),
                 },
                 {
                   key: 'delete',
                   text: '删除',
                   color: 'danger',
-                  click: () => {
+                  onClick: () => {
                     deleteUserUsingPost({ id: record.id }).then((res) => {
                       if (res.success) {
                         message.success('删除成功');
