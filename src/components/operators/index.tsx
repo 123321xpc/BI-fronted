@@ -2,7 +2,7 @@ import Flex, { MyFlexProps } from '@/components/Flex';
 import { Button, ButtonProps } from 'antd';
 
 /**
- * @description Operators 组件的参数类型定义
+ * @description operators 组件的参数类型定义
  */
 type Props = {
   /** @description 外层容器的类名 */

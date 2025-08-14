@@ -1,5 +1,4 @@
-import { FORM_MODAL_TYPE, FormModalType } from '@/components/FormModal/config';
-import QuickForm, { QuickFormProps, Schema } from '@/components/QuickForm';
+import { FORM_MODAL_TYPE, FormModalType } from '@/components/form-modal/config';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   ActionType,
@@ -16,6 +15,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import QuickForm, { QuickFormProps, Schema } from 'src/components/quick-form';
 import { ResultType } from '../../../config/request';
 import useForm = ProForm.useForm;
 
@@ -36,7 +36,7 @@ type Props = {
   tableRef?: MutableRefObject<ActionType>;
 
   /**
-   * @description 表单结构定义（QuickForm 的 schema）
+   * @description 表单结构定义（quick-form 的 schema）
    */
   schema: Schema | SchemaFunc;
 
@@ -61,7 +61,7 @@ type Props = {
   submitApi?: any | any[];
 
   /**
-   * @description 传递给 QuickForm 的额外属性（除 schema 外）
+   * @description 传递给 quick-form 的额外属性（除 schema 外）
    */
   formProps?: Omit<QuickFormProps, 'schema'>;
 

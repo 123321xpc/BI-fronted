@@ -1,11 +1,11 @@
 import { deleteUserUsingPost } from '@/api/userController';
-import { FormModalRef } from '@/components/FormModal';
-import { FORM_MODAL_TYPE } from '@/components/FormModal/config';
-import Operators from '@/components/Operators';
+import { FORM_MODAL_TYPE } from '@/components/form-modal/config';
 import { ColumnsType, useColumnProps } from '@/hooks/useColumnProps';
 import { ActionType } from '@ant-design/pro-components';
 import { message } from 'antd';
 import { MutableRefObject, RefObject, useMemo } from 'react';
+import { FormModalRef } from 'src/components/form-modal';
+import Operators from 'src/components/operators';
 
 export const useColumn = (
   modalRef: RefObject<FormModalRef>,
@@ -80,7 +80,7 @@ export const useColumn = (
   //     width: 120,
   //     render: (_: any, record: API.User) => {
   //       return (
-  //         <Operators
+  //         <operators
   //           options={[
   //             {
   //               key: FORM_MODAL_TYPE.update.key,

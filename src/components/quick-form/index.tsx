@@ -48,12 +48,12 @@ export type Schema = {
 };
 
 /**
- * @description QuickForm 暴露给外部的 ref 类型（使用 ProForm 的 formRef）
+ * @description quick-form 暴露给外部的 ref 类型（使用 ProForm 的 formRef）
  */
 export type QuickFormRef = FormInstance;
 
 /**
- * @description QuickForm 组件的 Props 定义
+ * @description quick-form 组件的 Props 定义
  */
 export type QuickFormProps = {
   /** @description 表单字段配置 Schema */

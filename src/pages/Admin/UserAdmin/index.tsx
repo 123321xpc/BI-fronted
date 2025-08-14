@@ -3,12 +3,12 @@ import {
   listUserByPageUsingPost,
   updateUserUsingPost,
 } from '@/api/userController';
-import FormModal, { FormModalRef } from '@/components/FormModal';
-import { Schema } from '@/components/QuickForm';
 import { useColumn } from '@/pages/Admin/UserAdmin/useColumn';
 import { ActionType, ProTable } from '@ant-design/pro-components';
 import { message } from 'antd';
 import { MutableRefObject, useRef } from 'react';
+import FormModal, { FormModalRef } from 'src/components/form-modal';
+import { Schema } from 'src/components/quick-form';
 import { DEFAULT_PAGE_SIZE } from '../../../../config';
 
 const schema: Schema = {

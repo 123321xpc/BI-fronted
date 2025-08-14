@@ -1,7 +1,7 @@
 import Flex from '@/components/Flex';
-import FormModal, { FormModalRef, SchemaFunc } from '@/components/FormModal';
 import { Button } from 'antd';
 import { useCallback, useRef } from 'react';
+import FormModal, { FormModalRef, SchemaFunc } from 'src/components/form-modal';
 
 const HomePage: React.FC = () => {
   const modalRef = useRef<FormModalRef>(null);
