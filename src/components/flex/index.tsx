@@ -1,5 +1,7 @@
 import { Flex as AntdFlex, FlexProps } from 'antd';
+import classNames from 'classnames';
 import React, { FC, ReactNode } from 'react';
+import './index.less';
 
 export type MyFlexProps = {
   /**
@@ -43,6 +45,11 @@ export type MyFlexProps = {
   board?: boolean;
 
   /**
+   * @description link 的 hover 效果
+   */
+  link?: boolean;
+
+  /**
    * @description 子组件内容
    */
   children?: ReactNode;
@@ -55,6 +62,7 @@ const Flex: FC<MyFlexProps> = ({
   padding,
   paddingRow,
   margin,
+  link,
   marginTop,
   marginLeft,
   justify = 'space-between',
@@ -62,6 +70,7 @@ const Flex: FC<MyFlexProps> = ({
   board,
   gap = 8,
   style,
+  className,
   children,
   ...rest
 }) => {
@@ -83,8 +92,13 @@ const Flex: FC<MyFlexProps> = ({
     border: board ? '1px solid #e0e0e0' : undefined,
     borderRadius: board ? 6 : undefined,
 
+    cursor: link ? 'pointer' : undefined,
+    transition: 'all 0.3s',
+
     ...style,
   };
+
+  const mergedClassName = classNames(className, { 'my-flex-link': link });
 
   return (
     <AntdFlex
@@ -93,6 +107,7 @@ const Flex: FC<MyFlexProps> = ({
       align={align}
       gap={gap}
       style={mergedStyle}
+      className={mergedClassName}
       {...rest}
     >
       {children}
