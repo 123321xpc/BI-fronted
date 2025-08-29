@@ -1,6 +1,5 @@
 import { deleteUserUsingPost } from '@/api/userController';
 import { FormModalRef } from '@/components/form-modal';
-import { FORM_MODAL_TYPE } from '@/components/form-modal/config';
 import Operators from '@/components/operators';
 import { ColumnsType, useColumnProps } from '@/hooks/useColumnProps';
 import { ActionType } from '@ant-design/pro-components';
@@ -32,9 +31,9 @@ export const useColumn = (
             <Operators
               options={[
                 {
-                  key: FORM_MODAL_TYPE.update.key,
-                  text: FORM_MODAL_TYPE.update.label,
-                  onClick: () => modalRef.current?.share(record),
+                  key: 'edit',
+                  text: '编辑',
+                  onClick: () => modalRef.current?.edit(record),
                 },
                 {
                   key: 'delete',

@@ -31,11 +31,6 @@ const HomePage: React.FC = () => {
             text: 'Edit',
             onClick: () => ref.current?.edit(),
           },
-          {
-            key: 'delete',
-            text: 'Delete',
-            onClick: () => ref.current?.share('delete', { id: 1, name: '2' }),
-          },
         ]}
       />
     </Flex>

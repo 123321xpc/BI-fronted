@@ -1,4 +1,3 @@
-import { FORM_MODAL_TYPE, FormModalType } from '@/components/form-modal/config';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   ActionType,
@@ -11,6 +10,7 @@ import {
   forwardRef,
   MutableRefObject,
   ReactNode,
+  useCallback,
   useImperativeHandle,
   useMemo,
   useState,
@@ -21,9 +21,11 @@ import useForm = ProForm.useForm;
 
 export type SchemaFunc = (
   form: FormInstance,
-  modalType: FormModalType | string,
+  modalType: OptType,
   isEdit: boolean,
 ) => Schema;
+
+type OptType = 'Add' | 'Edit' | string;
 
 type Props = {
   /**
@@ -57,7 +59,7 @@ type Props = {
   objName?: string;
 
   /**
-   * @description 表单提交的 API 方法，可以是单个方法，也可以是按操作类型分的数组(数组中各方法的位置需要在config.ts中配置)
+   * @description 表单提交的 API 方法，可以是单个方法，也可以是数组(数组中add方法放入0号位置，edit方法放入1号位置)
    */
   submitApi?: any | any[];
 
@@ -65,11 +67,6 @@ type Props = {
    * @description 传递给 quick-form 的额外属性（除 schema 外）
    */
   formProps?: Omit<QuickFormProps, 'schema'>;
-
-  /**
-   * @description 当前操作类型（新增/编辑），默认 FORM_MODAL_TYPE.add.key
-   */
-  operatingType?: FormModalType;
 
   /**
    * @description 表单提交成功后的回调
@@ -85,7 +82,6 @@ type Props = {
 export type FormModalRef = {
   add: (initialValues?: any) => void;
   edit: (initialValues?: any) => void;
-  share: (type: string, initialValues?: any) => void;
   close: () => void;
   form: FormInstance;
 };
@@ -94,7 +90,6 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
   const {
     schema,
     trigger,
-    operatingType = FORM_MODAL_TYPE.add.key,
     initialValue,
     objName = '用户',
     tableRef,
@@ -110,19 +105,15 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
   // antd-pro form 实例
   const [form] = useForm();
   const [open, setOpen] = useState(false); // 控制 ModalForm 显示
-  const [type, setType] = useState<FormModalType>(operatingType); // 当前操作类型
+  const [type, setType] = useState<OptType>('Add'); // 当前操作类型
 
   // 是否为创建模式
-  const isCreate = useMemo(() => type === FORM_MODAL_TYPE.add.key, [type]);
+  const isCreate = useMemo(() => type === 'Add', [type]);
 
   // 暴露方法给父组件调用
   useImperativeHandle(ref, () => ({
-    add: (initialValues?: any) =>
-      handleOpen(initialValues, FORM_MODAL_TYPE.add.key),
-    edit: (initialValues?: any) =>
-      handleOpen(initialValues, FORM_MODAL_TYPE.edit.key),
-    share: (type: string, initialValues?: any) =>
-      handleOpen(initialValues, type),
+    add: (initialValues?: any) => handleOpen('Add', initialValues),
+    edit: (initialValues?: any) => handleOpen('Edit', initialValues),
     close: handleClose,
     form,
   }));
@@ -130,7 +121,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
   /**
    * 提交处理逻辑
    */
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!form) {
       return Promise.reject('No form instance found');
     }
@@ -138,20 +129,12 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     // 优先使用自定义 onSubmit
     if (onSubmit) return onSubmit(form);
 
-    // 获取对应 API（如果是数组则按类型选择）
     const api = Array.isArray(submitApi)
-      ? submitApi[
-          FORM_MODAL_TYPE[type as keyof typeof FORM_MODAL_TYPE]?.submitApiIdx
-        ]
+      ? submitApi[isCreate ? 0 : 1]
       : submitApi;
 
     if (api) {
       const values = await form.validateFields();
-
-      // 新增时移除 id
-      if (type === FORM_MODAL_TYPE.add.key) {
-        delete values.id;
-      }
 
       const res: ResultType<any> = await api(values);
 
@@ -170,10 +153,10 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     Promise.reject('No submitApi provided');
     message.error(`type = ${type}, 无 API 提供， 无法提交表单`);
     return false;
-  };
+  }, [form, isCreate]);
 
-  const handleOpen = (initValues?: any, type?: FormModalType) => {
-    setType(type || FORM_MODAL_TYPE.add.key);
+  const handleOpen = (type?: OptType, initValues?: any) => {
+    setType(type || 'Add');
     form.setFieldsValue(initValues || {});
     setOpen(true);
   };
@@ -184,13 +167,8 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
   };
 
   const finalTitle = useMemo(() => {
-    return (
-      title ||
-      `${
-        FORM_MODAL_TYPE[type as keyof typeof FORM_MODAL_TYPE]?.label
-      }${objName}`
-    );
-  }, [type, title, objName]);
+    return title || `${isCreate ? '新增' : '编辑'}${objName}`;
+  }, [type, title, objName, isCreate]);
 
   // 触发按钮，未传入 trigger 时使用默认
   const finalTrigger = useMemo(() => {
@@ -209,7 +187,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
   const finalSchema = useMemo(() => {
     return typeof schema === 'function'
-      ? schema(form, type, type === FORM_MODAL_TYPE.edit.key)
+      ? schema(form, type, type === 'Edit')
       : schema;
   }, [schema, type, form]);
 

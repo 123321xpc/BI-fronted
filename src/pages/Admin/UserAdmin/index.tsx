@@ -53,7 +53,6 @@ export default () => {
       headerTitle="User Admin"
       toolBarRender={() => [
         <FormModal
-          operatingType={'add'}
           ref={modalRef}
           tableRef={tableRef as any}
           schema={schema}
