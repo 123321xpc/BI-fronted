@@ -22,6 +22,7 @@ import useForm = ProForm.useForm;
 export type SchemaFunc = (
   form: FormInstance,
   modalType: FormModalType | string,
+  isEdit: boolean,
 ) => Schema;
 
 type Props = {
@@ -82,9 +83,10 @@ type Props = {
 } & ModalProps;
 
 export type FormModalRef = {
-  open: () => void;
+  add: (initialValues?: any) => void;
+  edit: (initialValues?: any) => void;
+  share: (type: string, initialValues?: any) => void;
   close: () => void;
-  share: (initialValues?: any, type?: FormModalType) => void;
   form: FormInstance;
 };
 
@@ -115,16 +117,13 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
   // 暴露方法给父组件调用
   useImperativeHandle(ref, () => ({
-    open: handleOpen,
+    add: (initialValues?: any) =>
+      handleOpen(initialValues, FORM_MODAL_TYPE.add.key),
+    edit: (initialValues?: any) =>
+      handleOpen(initialValues, FORM_MODAL_TYPE.edit.key),
+    share: (type: string, initialValues?: any) =>
+      handleOpen(initialValues, type),
     close: handleClose,
-    share: (initialValues?: any, type?: FormModalType) => {
-      // 默认打开为编辑模式
-      setType(type || FORM_MODAL_TYPE.update.key);
-      if (initialValues) {
-        form.setFieldsValue(initialValues);
-      }
-      handleOpen();
-    },
     form,
   }));
 
@@ -173,18 +172,25 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     return false;
   };
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = (initValues?: any, type?: FormModalType) => {
+    setType(type || FORM_MODAL_TYPE.add.key);
+    form.setFieldsValue(initValues || {});
+    setOpen(true);
+  };
 
   const handleClose = () => {
     setOpen(false);
-    setType(FORM_MODAL_TYPE.add.key); // 重置为新增模式
     form.resetFields(); // 清空表单
   };
 
-  // ModalForm 的 open 状态变化时同步处理
-  const handleOpenChange = (open: boolean) => {
-    return open ? handleOpen() : handleClose();
-  };
+  const finalTitle = useMemo(() => {
+    return (
+      title ||
+      `${
+        FORM_MODAL_TYPE[type as keyof typeof FORM_MODAL_TYPE]?.label
+      }${objName}`
+    );
+  }, [type, title, objName]);
 
   // 触发按钮，未传入 trigger 时使用默认
   const finalTrigger = useMemo(() => {
@@ -199,33 +205,26 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
         {trigger || '创建用户'}
       </Button>
     );
-  }, [trigger]);
+  }, [trigger, isCreate]);
 
   const finalSchema = useMemo(() => {
-    console.log(
-      'finalSchema',
-      typeof schema === 'function' ? schema(form, type) : schema,
-    );
-    return typeof schema === 'function' ? schema(form, type) : schema;
-  }, [schema, type]);
+    return typeof schema === 'function'
+      ? schema(form, type, type === FORM_MODAL_TYPE.edit.key)
+      : schema;
+  }, [schema, type, form]);
 
   return (
     <ModalForm
       layout={layout}
-      title={
-        title ||
-        `${
-          FORM_MODAL_TYPE[type as keyof typeof FORM_MODAL_TYPE]?.label
-        }${objName}`
-      }
+      title={finalTitle}
       open={open}
-      onOpenChange={handleOpenChange}
       trigger={finalTrigger as any}
       initialValues={initialValue}
       autoFocusFirstInput
       onFinish={handleSubmit as any}
       modalProps={{
         destroyOnClose: true,
+        onCancel: handleClose,
         ...rest,
       }}
     >

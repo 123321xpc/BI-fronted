@@ -7,8 +7,8 @@ type ObjType = {
 };
 
 export const FORM_MODAL_TYPE: ObjType = {
-  update: {
-    key: 'update',
+  edit: {
+    key: 'edit',
     label: '编辑',
     submitApiIdx: 1,
   },
@@ -24,4 +24,4 @@ export const FORM_MODAL_TYPE: ObjType = {
   },
 };
 
-export type FormModalType = 'update' | 'add' | 'delete' | string;
+export type FormModalType = 'edit' | 'add' | 'delete' | string;
