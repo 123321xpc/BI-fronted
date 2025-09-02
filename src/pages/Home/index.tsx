@@ -15,7 +15,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <Flex vertical>
+    <Flex vertical className={'bg-amber-400 w-full'}>
       <FormModal
         watchFields={['name', 'id']}
         schema={schema}
