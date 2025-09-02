@@ -5,12 +5,13 @@ import {
   ModalForm,
   ProForm,
 } from '@ant-design/pro-components';
-import { Button, message, ModalProps } from 'antd';
+import { Button, Form, message, ModalProps } from 'antd';
 import {
   forwardRef,
   MutableRefObject,
   ReactNode,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useState,
@@ -21,11 +22,11 @@ import useForm = ProForm.useForm;
 
 export type SchemaFunc = (
   form: FormInstance,
-  modalType: OptType,
   isEdit: boolean,
+  watchFields: any,
 ) => Schema;
 
-type OptType = 'Add' | 'Edit' | string;
+type OptType = 'Add' | 'Edit';
 
 type Props = {
   /**
@@ -77,6 +78,11 @@ type Props = {
    * @description 自定义提交方法，返回布尔值。若设置该方法，则不会调用 submitApi
    */
   onSubmit?: (form: FormInstance) => boolean;
+
+  /**
+   * @description 表单监听字段，用于表单联动
+   */
+  watchFields?: string | string[];
 } & ModalProps;
 
 export type FormModalRef = {
@@ -99,6 +105,7 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
     onSubmit,
     onSuccess,
     layout = 'horizontal',
+    watchFields = '',
     ...rest
   } = props;
 
@@ -109,6 +116,24 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
   // 是否为创建模式
   const isCreate = useMemo(() => type === 'Add', [type]);
+
+  const selector = useCallback(
+    (values: any) => {
+      return Array.isArray(watchFields)
+        ? watchFields.reduce((acc: any, key: string) => {
+            acc[key] = values[key];
+            return acc;
+          }, {} as any)
+        : values[watchFields];
+    },
+    [watchFields],
+  );
+
+  const watch = Form.useWatch(selector, form);
+
+  useEffect(() => {
+    console.log('watch', watch);
+  }, [watch]);
 
   // 暴露方法给父组件调用
   useImperativeHandle(ref, () => ({
@@ -187,9 +212,9 @@ const Component = forwardRef<FormModalRef, Props>((props, ref) => {
 
   const finalSchema = useMemo(() => {
     return typeof schema === 'function'
-      ? schema(form, type, type === 'Edit')
+      ? schema(form, type === 'Edit', watch)
       : schema;
-  }, [schema, type, form]);
+  }, [schema, type, form, watch]);
 
   return (
     <ModalForm

@@ -5,20 +5,23 @@ import { useRef } from 'react';
 
 const HomePage: React.FC = () => {
   const ref = useRef<FormModalRef>(null);
-  const schema: SchemaFunc = (form, modalType, isEdit) => {
+  const schema: SchemaFunc = (form, isEdit, watchFields) => {
     return {
       id: {
-        remove: !isEdit,
+        remove: watchFields == '1',
       },
-      name: {
-        remove: modalType === 'delete',
-      },
+      name: {},
     };
   };
 
   return (
     <Flex vertical>
-      <FormModal schema={schema} ref={ref} trigger={false} />
+      <FormModal
+        watchFields={['name', 'id']}
+        schema={schema}
+        ref={ref}
+        trigger={false}
+      />
       <Operators
         options={[
           {
