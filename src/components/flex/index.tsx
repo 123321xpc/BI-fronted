@@ -80,9 +80,15 @@ const Flex: FC<MyFlexProps> = ({
 
     padding: padding !== undefined ? `${padding}px` : undefined,
     paddingLeft:
-      paddingRow !== undefined ? `${paddingRow}px` : style?.paddingLeft,
+      paddingRow !== undefined
+        ? `${paddingRow}px`
+        : style?.paddingLeft ??
+          (padding !== undefined ? `${padding}px` : undefined),
     paddingRight:
-      paddingRow !== undefined ? `${paddingRow}px` : style?.paddingRight,
+      paddingRow !== undefined
+        ? `${paddingRow}px`
+        : style?.paddingRight ??
+          (padding !== undefined ? `${padding}px` : undefined),
 
     margin: margin !== undefined ? `${margin}px` : undefined,
     marginTop: marginTop !== undefined ? `${marginTop}px` : style?.marginTop,
