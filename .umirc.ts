@@ -19,4 +19,10 @@ export default defineConfig({
     src: path.resolve(__dirname, 'src'),
   },
   tailwindcss: {},
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8101',
+      changeOrigin: true,
+    },
+  },
 });

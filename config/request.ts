@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import axios, { AxiosError } from 'axios';
-import { BASE_URL, RESULT_CODE } from './index';
+import { RESULT_CODE } from './index';
 
 export type ResultType<T> = {
   code: number;
@@ -10,7 +10,6 @@ export type ResultType<T> = {
 };
 
 const instance = axios.create({
-  baseURL: BASE_URL,
   timeout: 100000,
   withCredentials: true,
 });
