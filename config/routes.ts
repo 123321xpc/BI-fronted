@@ -14,11 +14,6 @@ export const routes: RouteType[] = [
         component: './Home',
       },
       {
-        name: '用户管理',
-        path: '/userAdmin',
-        component: './Admin/UserAdmin',
-      },
-      {
         name: 'AI',
         path: '/test',
         component: './Test',

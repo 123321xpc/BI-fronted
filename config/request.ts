@@ -10,6 +10,7 @@ export type ResultType<T> = {
 };
 
 const instance = axios.create({
+  baseURL: '/api',
   timeout: 100000,
   withCredentials: true,
 });
