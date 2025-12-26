@@ -1,18 +1,11 @@
-import {
-  userLoginUsingPost,
-  userRegisterUsingPost,
-} from '@/api/userController';
+import { userLogin, userRegister } from '@/api/yonghuxiangguanjiekou';
 import { useModel, useNavigate } from '@@/exports';
 import { useRequest } from '@@/plugin-request';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import {
-  LoginForm,
-  ProFormCheckbox,
-  ProFormText,
-} from '@ant-design/pro-components';
+import { LoginForm, ProFormText } from '@ant-design/pro-components';
 import { message, Tabs, theme } from 'antd';
 import { useMemo, useState } from 'react';
-import { LOGO_URL, RESULT_CODE, SYSTEM_NAME } from '../../../config';
+import { LOGO_URL, SYSTEM_NAME } from '../../../config';
 import styles from './index.less';
 
 export default () => {
@@ -26,17 +19,21 @@ export default () => {
   const { run: handleSubmit } = useRequest(
     (params: API.UserLoginRequest) => {
       if (isLogin) {
-        return userLoginUsingPost(params); // ✅ 返回异步请求
+        return userLogin(params); // ✅ 返回异步请求
       } else {
-        return userRegisterUsingPost(params);
+        return userRegister(params);
       }
     },
     {
       manual: true,
       onSuccess: (res: any) => {
-        if (res && res.code === RESULT_CODE.SUCCESS) {
+        if (res) {
           updateUser(res as any);
-          nav('/home');
+          if (isLogin) {
+            nav('/');
+          } else {
+            setTabKey('login');
+          }
         }
       },
       onError: (err: any) => {
@@ -55,8 +52,11 @@ export default () => {
         logo={LOGO_URL}
         title={SYSTEM_NAME}
         onFinish={handleSubmit as any}
+        submitter={{
+          searchConfig: { submitText: isLogin ? '登录' : '注册' },
+        }}
       >
-        <Tabs centered onChange={(tab) => setTabKey(tab)}>
+        <Tabs centered activeKey={tabKey} onChange={(tab) => setTabKey(tab)}>
           <Tabs.TabPane key={'login'} tab={'账号密码登录'} />
           <Tabs.TabPane key={'register'} tab={'注册'} />
         </Tabs>
@@ -113,22 +113,6 @@ export default () => {
             ]}
           />
         )}
-        <div
-          style={{
-            marginBlockEnd: 24,
-          }}
-        >
-          <ProFormCheckbox noStyle name="autoLogin">
-            自动登录
-          </ProFormCheckbox>
-          <a
-            style={{
-              float: 'right',
-            }}
-          >
-            忘记密码
-          </a>
-        </div>
       </LoginForm>
     </div>
   );
