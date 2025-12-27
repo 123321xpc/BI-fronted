@@ -3,11 +3,15 @@ import Flex from '@/components/flex';
 import {
   ProForm,
   ProFormSelect,
-  ProFormText,
+  ProFormTextArea,
   ProFormUploadButton,
 } from '@ant-design/pro-components';
 import { ProFormInstance } from '@ant-design/pro-components/lib';
-import { useRef } from 'react';
+import { message, Spin, UploadFile } from 'antd';
+import ReactECharts, { EChartsOption } from 'echarts-for-react';
+import React, { useRef, useState } from 'react';
+import { RESULT_CODE } from '../../../config';
+import styles from './index.less';
 
 const options = [
   {
@@ -28,65 +32,145 @@ const options = [
   },
 ];
 
+type FormDataType = {
+  goal: string;
+  chartType: string;
+  file: UploadFile[];
+  name?: string;
+};
+
 const HomePage: React.FC = () => {
-  const formRef = useRef<
-    ProFormInstance<{
-      name: string;
-      company?: string;
-      useMode?: string;
-    }>
-  >();
+  const formRef = useRef<ProFormInstance<FormDataType>>();
+  const [loading, setLoading] = useState(false);
+  const [chartOption, setChartOption] = useState<EChartsOption>();
+  const [chartRes, setChartRes] = useState<string>();
 
-  // const handleSubmit = async (form) => {
-  //   const { file, ...rest } = form as any;
-  //   const res = await getChartByAi(rest, file[0]);
-  //   console.log(res);
-  // };
-
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (values: FormDataType) => {
     try {
-      // 1. 创建FormData对象（关键：multipart请求必须用FormData）
-      const form = new FormData();
+      console.log('表单数据:', values);
 
-      // 2. 处理文件：ProFormUploadButton返回的是文件数组，取第一个
-      if (formData.file && formData.file.length > 0) {
-        form.append('file', formData.file[0].originFileObj); // 注意取originFileObj（antd upload的原生文件对象）
+      // 1. 校验文件
+      if (!values.file || values.file.length === 0) {
+        message.error('请上传数据文件!');
+        return;
       }
 
-      // 3. 处理表单参数（对应后端的GenChartRequest）
-      form.append('goal', formData.goal || '');
-      form.append('chartType', formData.chartType || '');
-      // 如果有name参数可以补充：form.append('name', formData.name || '');
+      // 2. 创建 FormData
+      const form = new FormData();
+      form.append('goal', values.goal || '');
+      form.append('chartType', values.chartType || '');
+      form.append('file', values.file[0].originFileObj as any);
 
-      // 4. 调用接口：直接传递FormData
-      const res = await getChartByAi({}, form);
-      console.log('接口返回:', res);
+      setLoading(true);
+      setChartOption(undefined);
+      const res = await getChartByAi({} as any, form);
+
+      if (res.code === RESULT_CODE.SUCCESS) {
+        setChartRes(res.data?.genResult);
+        if (res.data?.genChart) {
+          try {
+            const chartOption = JSON.parse(res.data.genChart);
+            setChartOption(chartOption);
+          } catch (error) {
+            console.error('解析图表配置失败:', error);
+            message.error('图表配置解析失败');
+          }
+        }
+      } else {
+        message.error(res.message || '生成图表失败');
+      }
     } catch (error) {
       console.error('提交失败:', error);
+      message.error('提交失败，请重试');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Flex className={' w-full'}>
-      <Flex className={'left flex-1'}>
-        <ProForm<{
-          name?: string;
-          goal: string;
-          chartType: string;
-        }>
-          onFinish={handleSubmit as any}
+    <Flex className="w-full">
+      <Flex className="left w-1/3">
+        <ProForm<FormDataType>
+          submitter={{
+            searchConfig: {
+              submitText: `${loading ? '正在分析' : '开始分析'}`,
+            },
+            resetButtonProps: false,
+            // 可以自定义提交按钮样式
+            submitButtonProps: {
+              type: 'primary',
+              loading,
+              size: 'large',
+            },
+          }}
+          onFinish={handleSubmit}
           formRef={formRef}
           autoFocusFirstInput
         >
-          <ProFormText name="goal" label="分析目标" />
-          <ProFormUploadButton
-            name="file"
-            label="上传数据文件（仅支持excel文件）"
+          <ProFormTextArea
+            required
+            name="goal"
+            label="分析目标"
+            placeholder="请输入您的分析目标，例如：分析销售额趋势"
+            rules={[
+              { required: true, message: '请输入分析目标' },
+              { min: 2, message: '分析目标至少2个字符' },
+            ]}
           />
-          <ProFormSelect name="chartType" label="图表类型" options={options} />
+
+          <ProFormUploadButton
+            required
+            name="file"
+            label="上传数据文件"
+            tooltip="仅支持Excel文件（.xlsx, .xls）"
+            rules={[
+              {
+                required: true,
+                message: '请上传数据文件',
+              },
+            ]}
+            max={1}
+            accept=".xlsx,.xls"
+          />
+
+          <ProFormSelect
+            name="chartType"
+            label="图表类型"
+            placeholder="请选择图表类型（可选）"
+            tooltip="可选择生成的图表类型，若不选择，则由系统自动选择合适的图表"
+            options={options}
+          />
         </ProForm>
       </Flex>
-      <Flex className={'right flex-1'}>1111</Flex>
+
+      <Flex vertical className={`${styles.right + ' flex-1'}`}>
+        <Spin spinning={loading} tip="正在分析数据，请稍候...">
+          {!chartOption && !loading && (
+            <div className="text-center py-8">
+              <h1 className="text-lg font-medium text-gray-400 mb-4">
+                请填写分析目标并上传数据文件
+              </h1>
+              <p className="text-gray-500">
+                点击左侧表单中的"开始分析"按钮生成图表
+              </p>
+            </div>
+          )}
+
+          {chartRes && (
+            <div className="font-medium text-lg w-[90%] mb-4 p-4 bg-blue-50 rounded">
+              {chartRes}
+            </div>
+          )}
+
+          {chartOption && (
+            <ReactECharts
+              className="h-[400px] w-full"
+              option={chartOption}
+              opts={{ renderer: 'svg' }}
+            />
+          )}
+        </Spin>
+      </Flex>
     </Flex>
   );
 };
