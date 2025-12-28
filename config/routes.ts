@@ -11,19 +11,19 @@ export const routes: RouteType[] = [
       {
         name: '首页',
         path: '/home',
-        component: './Home',
+        component: './home',
       },
       {
-        name: 'AI',
-        path: '/test',
-        component: './Test',
+        name: '我的图表',
+        path: '/my-charts',
+        component: './my-charts',
       },
     ],
   },
   {
     path: '/user/login',
     layout: false,
-    component: './Login',
+    component: './login',
   },
 ];
 
